@@ -1,5 +1,11 @@
 import { Sequelize } from 'sequelize'
 import {
+  BlogModel,
+  CommentModel,
+  DiscountModel,
+  OrderModel,
+  OrderDetailModel,
+  ProductModel,
   MovieModel,
   TokenModel,
   UserModel,
@@ -17,6 +23,7 @@ import {
   SalekitCategoriesModel,
   SalekitDocumenHistoriesModel,
   SalekitDocumentModel,
+  CartModel,
 } from '../models'
 import log4js from './logger'
 import * as dotenv from 'dotenv'
@@ -36,7 +43,14 @@ export const connectionDB = async () => {
     await sequelize.authenticate()
 
     // await MovieModel.sync({ alter: true })
-    // await UserModel.sync({ alter: true })
+    await UserModel.sync({ alter: true })
+    await CommentModel.sync({ alter: true })
+    await DiscountModel.sync({ alter: true })
+    await OrderModel.sync({ alter: true })
+    await OrderDetailModel.sync({ alter: true })
+    await ProductModel.sync({ alter: true })
+    await CartModel.sync({ alter: true })
+
     // await TransactionHistoriesModel.sync({ alter: true })
 
     // await TokenModel.sync({ alter: true })

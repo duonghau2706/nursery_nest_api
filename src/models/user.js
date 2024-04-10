@@ -26,11 +26,11 @@ const Users = sequelize.define(
       type: DataTypes.TEXT,
     },
 
-    gender: {
-      type: DataTypes.INTEGER,
+    // gender: {
+    //   type: DataTypes.INTEGER,
 
-      defaultValue: 2,
-    },
+    //   defaultValue: 2,
+    // },
 
     born: {
       type: DataTypes.TEXT,
@@ -48,29 +48,29 @@ const Users = sequelize.define(
       allowNull: true,
     },
 
-    money: {
-      type: DataTypes.BIGINT,
-    },
+    // money: {
+    //   type: DataTypes.BIGINT,
+    // },
 
-    list_movie_id: {
-      type: DataTypes.TEXT,
-    },
+    // list_movie_id: {
+    //   type: DataTypes.TEXT,
+    // },
 
-    service: {
-      type: DataTypes.INTEGER,
-    },
+    // service: {
+    //   type: DataTypes.INTEGER,
+    // },
 
-    renewal_date: {
-      type: DataTypes.TEXT,
-    },
+    // renewal_date: {
+    //   type: DataTypes.TEXT,
+    // },
 
-    bank_name: {
-      type: DataTypes.TEXT,
-    },
+    // bank_name: {
+    //   type: DataTypes.TEXT,
+    // },
 
-    bank_account: {
-      type: DataTypes.TEXT,
-    },
+    // bank_account: {
+    //   type: DataTypes.TEXT,
+    // },
 
     role: {
       type: DataTypes.INTEGER,
@@ -78,11 +78,11 @@ const Users = sequelize.define(
       defaultValue: 0,
     },
 
-    is_member: {
-      type: DataTypes.BOOLEAN,
+    // is_member: {
+    //   type: DataTypes.BOOLEAN,
 
-      defaultValue: true,
-    },
+    //   defaultValue: true,
+    // },
 
     deleted: {
       type: DataTypes.BOOLEAN,

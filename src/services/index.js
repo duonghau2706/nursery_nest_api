@@ -5,3 +5,5 @@ export { default as SendMailService } from './SendMailService'
 export { default as UserService } from './UserService'
 export { default as getTotalAssignment } from './DashBroadService'
 export { default as PdfService } from './PdfService'
+
+export { default as ProductService } from './ProductService'

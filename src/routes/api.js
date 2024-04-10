@@ -17,11 +17,16 @@ import sendMailRouter from './sendMailApi'
 // import templateRouter from './templateApi'
 import transactionHistoriesRouter from './transactionHistoriesApi'
 import userRouter from './userApi'
+import productRouter from './productApi'
+import cartRouter from './cartApi'
 
 const router = express.Router()
 
 // router.use('', helperRouter)
 // router.use('/ms-teams', msTeamsRouter)
+router.use('/cart', cartRouter)
+router.use('/product', productRouter)
+
 router.use('/login', loginRouter)
 router.use('/register', registerRouter)
 router.use('/movie', movieRouter)
