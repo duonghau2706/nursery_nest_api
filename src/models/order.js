@@ -13,23 +13,53 @@ const Order = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
     },
-    date: {
+    name: {
       type: DataTypes.TEXT,
+    },
+    phone: {
+      type: DataTypes.TEXT,
+    },
+    order_code: {
+      type: DataTypes.TEXT,
+      unique: true,
+      allowNull: true,
+    },
+    status_money: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    total_money: {
-      type: DataTypes.DECIMAL(15, 3),
-      allowNull: false,
-    },
-    status: {
+    status_ship: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
     discount_id: {
-      type: DataTypes.UUID,
+      type: DataTypes.TEXT,
+    },
+    province: {
+      type: DataTypes.TEXT,
+    },
+    district: {
+      type: DataTypes.TEXT,
+    },
+    ward: {
+      type: DataTypes.TEXT,
+    },
+    adress: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    original_total_money: {
+      type: DataTypes.DECIMAL(15, 3),
     },
     ship: {
+      type: DataTypes.DECIMAL(15, 0),
+    },
+    sale: {
+      type: DataTypes.DECIMAL(15, 2),
+    },
+    total_money: {
       type: DataTypes.DECIMAL(15, 3),
+      allowNull: false,
     },
     note: {
       type: DataTypes.TEXT,

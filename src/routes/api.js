@@ -19,13 +19,23 @@ import transactionHistoriesRouter from './transactionHistoriesApi'
 import userRouter from './userApi'
 import productRouter from './productApi'
 import cartRouter from './cartApi'
+import discountRouter from './discountApi'
+import orderRouter from './orderApi'
+import orderDetailRouter from './orderDetailApi'
+import blogRouter from './blogApi'
+import categoryRouter from './categoryApi'
 
 const router = express.Router()
 
 // router.use('', helperRouter)
 // router.use('/ms-teams', msTeamsRouter)
+router.use('/category', categoryRouter)
+router.use('/blog', blogRouter)
+router.use('/order-detail', orderDetailRouter)
+router.use('/order', orderRouter)
 router.use('/cart', cartRouter)
 router.use('/product', productRouter)
+router.use('/discount', discountRouter)
 
 router.use('/login', loginRouter)
 router.use('/register', registerRouter)

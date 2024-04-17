@@ -24,6 +24,7 @@ import {
   SalekitDocumenHistoriesModel,
   SalekitDocumentModel,
   CartModel,
+  CategoryModel,
 } from '../models'
 import log4js from './logger'
 import * as dotenv from 'dotenv'
@@ -50,10 +51,12 @@ export const connectionDB = async () => {
     await OrderDetailModel.sync({ alter: true })
     await ProductModel.sync({ alter: true })
     await CartModel.sync({ alter: true })
+    await BlogModel.sync({ alter: true })
+    await CategoryModel.sync({ alter: true })
 
     // await TransactionHistoriesModel.sync({ alter: true })
 
-    // await TokenModel.sync({ alter: true })
+    await TokenModel.sync({ alter: true })
 
     // await CustomerModel.sync({ alter: true })
     // await TemplateModel.sync({ alter: true })

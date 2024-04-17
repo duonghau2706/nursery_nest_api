@@ -8,16 +8,10 @@ const Blog = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
-    publish: {
-      type: DataTypes.TEXT,
-    },
     title: {
       type: DataTypes.TEXT,
     },
     content: {
-      type: DataTypes.TEXT,
-    },
-    list_image: {
       type: DataTypes.TEXT,
     },
     created_by: {

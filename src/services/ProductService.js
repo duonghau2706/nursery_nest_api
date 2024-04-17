@@ -17,6 +17,11 @@ class ProductService {
 
   async getAllProduct() {
     try {
+      const allSql = `SELECT * from products`
+      const getAll = await sequelize.query(allSql, {
+        type: QueryTypes.SELECT,
+      })
+
       const klmSql = `SELECT * from products WHERE category = 0`
       const getAllKLM = await sequelize.query(klmSql, {
         type: QueryTypes.SELECT,
@@ -43,6 +48,7 @@ class ProductService {
       })
 
       const data = {
+        all: camelcaseKeys(getAll),
         klm: camelcaseKeys(getAllKLM),
         btc: camelcaseKeys(getAllBTC),
         kkdn: camelcaseKeys(getAllKKDN),
@@ -89,10 +95,11 @@ class ProductService {
 
   async getProductById(req) {
     const id = req?.query?.id
-    console.log('req')
 
     try {
       const prdSql = `SELECT * from products where id = '${id}'`
+      console.log('prdSql', prdSql)
+
       const getProductById = await sequelize.query(prdSql, {
         type: QueryTypes.SELECT,
       })

@@ -8,6 +8,10 @@ const Discount = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    code: {
+      type: DataTypes.TEXT,
+      unique: true,
+    },
     sale: {
       type: DataTypes.DECIMAL(15, 3),
     },
