@@ -8,7 +8,13 @@ const Blog = sequelize.define(
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
     },
+    img: {
+      type: DataTypes.TEXT,
+    },
     title: {
+      type: DataTypes.TEXT,
+    },
+    author: {
       type: DataTypes.TEXT,
     },
     content: {

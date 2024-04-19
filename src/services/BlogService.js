@@ -86,7 +86,7 @@ class BlogService {
 
   async deleteBlog(req) {
     const listId = req?.body?.listId
-    console.log('listId', listId)
+
     try {
       const res = await this.blogModel.destroy({
         where: {
