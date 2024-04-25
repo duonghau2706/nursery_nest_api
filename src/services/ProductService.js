@@ -1,11 +1,13 @@
+import { element as elementPaginate } from '@/helpers/paginate'
 import { Message } from '@/utils/Message'
 import ResponseUtils from '@/utils/ResponseUtils'
 import log4js from 'log4js'
 
 import { sequelize } from '@/helpers/connection'
-import * as dotenv from 'dotenv'
-import { QueryTypes } from 'sequelize'
+import { ProductModel } from '@/models'
 import camelcaseKeys from 'camelcase-keys'
+import * as dotenv from 'dotenv'
+import { Op, QueryTypes } from 'sequelize'
 
 dotenv.config()
 
@@ -13,6 +15,66 @@ const logger = log4js.getLogger()
 class ProductService {
   constructor() {
     this.result = ResponseUtils
+    this.productModel = ProductModel
+  }
+
+  async getAll(req) {
+    const limitInput = req?.query?.perPage
+    const pageInput = req?.query?.currentPage
+    const name = req?.query?.name
+    const category = req?.query?.category
+
+    try {
+      let sql = 'select * from products where 1=1'
+
+      if (name?.trim()?.length > 0) {
+        sql += ` and name='${name}'`
+      }
+
+      if (category?.trim()?.length > 0) {
+        sql += ` and category=${category}`
+      }
+
+      let getData = await sequelize.query(sql, {
+        type: QueryTypes.SELECT,
+      })
+
+      let totalPageRes = 1
+      let pageRes = pageInput
+      let total = getData?.length
+
+      if (limitInput || pageInput) {
+        const { totalPage, page, offset } = elementPaginate({
+          totalRecord: getData?.length,
+          page: pageInput,
+          limit: limitInput,
+        })
+
+        totalPageRes = totalPage
+        pageRes = page
+
+        getData = await sequelize.query(
+          sql + ` LIMIT ${limitInput} OFFSET ${offset}`,
+          { type: QueryTypes.SELECT }
+        )
+      }
+
+      const dataRes = {
+        listProduct: getData,
+        pagination: {
+          totalPageRes: +totalPageRes,
+          pageRes: +pageRes,
+          total: +total,
+        },
+      }
+
+      return this.result(200, true, Message.SUCCESS, dataRes)
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error?.message,
+      }
+    }
   }
 
   async getAllProduct() {
@@ -97,19 +159,79 @@ class ProductService {
     const id = req?.query?.id
 
     try {
-      const prdSql = `SELECT * from products where id = '${id}'`
-      console.log('prdSql', prdSql)
-
-      const getProductById = await sequelize.query(prdSql, {
-        type: QueryTypes.SELECT,
+      const res = await this.productModel.findOne({
+        where: { id },
       })
 
-      return this.result(
-        200,
-        true,
-        Message.SUCCESS,
-        camelcaseKeys(getProductById)
+      return this.result(200, true, Message.SUCCESS, res)
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error?.message,
+      }
+    }
+  }
+
+  async createProduct(req) {
+    try {
+      const res = await this.productModel.create(req?.body)
+
+      return this.result(200, true, Message.SUCCESS, res)
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error?.message,
+      }
+    }
+  }
+
+  async updateProduct(req) {
+    console.log('body', req?.body)
+    const id = req?.body?.id
+    const name = req?.body?.name
+    const category = req?.body?.category?.value
+    const original_price = req?.body?.originalPrice
+    const img = req?.body?.img
+    const description = req?.body?.description
+    const updated_by = req?.body?.updated_by
+    const updated_at = req?.body?.updated_at
+
+    try {
+      const res = await this.productModel.update(
+        {
+          name,
+          category,
+          original_price,
+          description,
+          img,
+          updated_at,
+          updated_by,
+        },
+        { where: { id } }
       )
+
+      return this.result(200, true, Message.SUCCESS, res)
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error?.message,
+      }
+    }
+  }
+
+  async deleteProduct(req) {
+    const listId = req?.body?.listId
+
+    try {
+      const res = await this.productModel.destroy({
+        where: {
+          id: {
+            [Op.in]: listId,
+          },
+        },
+      })
+
+      return this.result(200, true, Message.SUCCESS, res)
     } catch (error) {
       throw {
         statusCode: 400,

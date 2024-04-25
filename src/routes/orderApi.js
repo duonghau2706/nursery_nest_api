@@ -10,6 +10,12 @@ router.get(
 )
 
 router.get(
+  '/get-order-by-id',
+  authorization(),
+  pickHandler('OrderController@getOrderById')
+)
+
+router.get(
   '/get-by-user-id',
   authorization(),
   pickHandler('OrderController@getOrdersByUserId')

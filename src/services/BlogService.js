@@ -61,6 +61,8 @@ class BlogService {
         blogSql += ` and created_at <= '${endDate}'`
       }
 
+      blogSql += ' order by created_at desc'
+
       let getBlog = await sequelize.query(blogSql, {
         type: QueryTypes.SELECT,
       })
@@ -146,7 +148,7 @@ class BlogService {
       const data = await sequelize.query(sql, {
         type: QueryTypes.SELECT,
       })
-      console.log('sql', sql)
+
       return this.result(200, true, Message.SUCCESS, data)
     } catch (error) {
       throw {

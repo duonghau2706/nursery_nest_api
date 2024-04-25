@@ -22,6 +22,16 @@ export default class OrderController {
     }
   }
 
+  async getOrderById(req, res, next) {
+    try {
+      const order = await OrderService.getOrderById(req)
+      res.status(200).json(this.response(200, Message.SUCCESS, null, order))
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(this.response(400, error.message, null))
+    }
+  }
+
   async getOrdersByUserId(req, res, next) {
     try {
       const order = await OrderService.getOrdersByUserId(req)

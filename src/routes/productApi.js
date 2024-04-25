@@ -10,6 +10,30 @@ router.get(
 )
 
 router.get(
+  '/get-all-prd',
+  authorization(),
+  pickHandler('ProductController@getAll')
+)
+
+router.post(
+  '/create-product',
+  authorization(),
+  pickHandler('ProductController@createProduct')
+)
+
+router.post(
+  '/update-product',
+  authorization(),
+  pickHandler('ProductController@updateProduct')
+)
+
+router.post(
+  '/delete-product',
+  authorization(),
+  pickHandler('ProductController@deleteProduct')
+)
+
+router.get(
   '/get-comment-by-id',
   authorization(),
   pickHandler('ProductController@getCommentById')

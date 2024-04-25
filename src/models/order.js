@@ -33,7 +33,9 @@ const Order = sequelize.define(
       allowNull: false,
     },
     discount_id: {
-      type: DataTypes.TEXT,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: true,
     },
     province: {
       type: DataTypes.TEXT,

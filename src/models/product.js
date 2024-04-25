@@ -27,6 +27,9 @@ const Product = sequelize.define(
     description: {
       type: DataTypes.TEXT,
     },
+    summarize: {
+      type: DataTypes.TEXT,
+    },
     deleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
