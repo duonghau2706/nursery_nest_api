@@ -1,32 +1,51 @@
-import { element as elementPaginate } from '@/helpers/paginate'
 import { Message } from '@/utils/Message'
 import ResponseUtils from '@/utils/ResponseUtils'
 import log4js from 'log4js'
+import { element as elementPaginate } from '@/helpers/paginate'
 
+import { Op } from 'sequelize'
 import { sequelize } from '@/helpers/connection'
-import { CategoryModel } from '@/models'
 import * as dotenv from 'dotenv'
-import { Op, QueryTypes } from 'sequelize'
+import { QueryTypes } from 'sequelize'
+import camelcaseKeys from 'camelcase-keys'
+import { CommentModel, UserModel } from '@/models'
 
 dotenv.config()
 
 const logger = log4js.getLogger()
-class CategoryService {
+class CommentService {
   constructor() {
     this.result = ResponseUtils
-    this.categoryModel = CategoryModel
+    this.commentModel = CommentModel
   }
 
   async getAll(req) {
     const limitInput = req?.query?.perPage
     const pageInput = req?.query?.currentPage
-    const name = req?.query?.name
+    const product_id = req?.query?.product_id
+    const user_id = req?.query?.user_id
+    const product_name = req?.query?.product_name
+    const user_name = req?.query?.user_name
 
     try {
-      let sql = 'select * from categories where 1=1'
+      let sql = `select c.*, u.name as user_name, p.name as product_name from comments as c
+        left join products as p on c.product_id = p.id
+        left join users as u on c.user_id = u.id where 1=1`
 
-      if (name?.trim()?.length > 0) {
-        sql += ` and name='${name}'`
+      if (product_id?.trim()?.length > 0) {
+        sql += ` and c.product_id='${product_id}'`
+      }
+
+      if (user_id?.trim()?.length > 0) {
+        sql += ` and c.user_id='${user_id}'`
+      }
+
+      if (product_name?.trim()?.length > 0) {
+        sql += ` and p.name='${product_name}'`
+      }
+
+      if (user_name?.trim()?.length > 0) {
+        sql += ` and u.name='${user_name}'`
       }
 
       let getData = await sequelize.query(sql, {
@@ -54,7 +73,7 @@ class CategoryService {
       }
 
       const dataRes = {
-        listCategory: getData,
+        listComment: getData,
         pagination: {
           totalPageRes: +totalPageRes,
           pageRes: +pageRes,
@@ -71,13 +90,11 @@ class CategoryService {
     }
   }
 
-  async getCategoryById(req) {
-    const categoryId = req?.query?.categoryId
+  async getCommentById(req) {
+    const commentId = req?.query?.commentId
 
     try {
-      const res = await this.categoryModel.findOne({
-        where: { id: categoryId },
-      })
+      const res = await this.commentModel.findOne({ where: { id: commentId } })
 
       return this.result(200, true, Message.SUCCESS, res)
     } catch (error) {
@@ -88,9 +105,9 @@ class CategoryService {
     }
   }
 
-  async createCategory(req) {
+  async createComment(req) {
     try {
-      const res = await this.categoryModel.create(req?.body)
+      const res = await this.commentModel.create(req?.body)
 
       return this.result(200, true, Message.SUCCESS, res)
     } catch (error) {
@@ -101,11 +118,11 @@ class CategoryService {
     }
   }
 
-  async updateCategory(req) {
+  async updateComment(req) {
     const id = req?.body?.id
 
     try {
-      const res = await this.categoryModel.update(req?.body, { where: { id } })
+      const res = await this.commentModel.update(req?.body, { where: { id } })
 
       return this.result(200, true, Message.SUCCESS, res)
     } catch (error) {
@@ -116,11 +133,11 @@ class CategoryService {
     }
   }
 
-  async deleteCategory(req) {
+  async deleteComment(req) {
     const listId = req?.body?.listId
 
     try {
-      const res = await this.categoryModel.destroy({
+      const res = await this.commentModel.destroy({
         where: {
           id: {
             [Op.in]: listId,
@@ -138,4 +155,4 @@ class CategoryService {
   }
 }
 
-export default new CategoryService()
+export default new CommentService()

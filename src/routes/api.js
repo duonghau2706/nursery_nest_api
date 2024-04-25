@@ -24,11 +24,14 @@ import orderRouter from './orderApi'
 import orderDetailRouter from './orderDetailApi'
 import blogRouter from './blogApi'
 import categoryRouter from './categoryApi'
+import commentRouter from './commentApi'
 
 const router = express.Router()
 
 // router.use('', helperRouter)
 // router.use('/ms-teams', msTeamsRouter)
+router.use('/comment', commentRouter)
+router.use('/user', userRouter)
 router.use('/category', categoryRouter)
 router.use('/blog', blogRouter)
 router.use('/order-detail', orderDetailRouter)
@@ -40,7 +43,6 @@ router.use('/discount', discountRouter)
 router.use('/login', loginRouter)
 router.use('/register', registerRouter)
 router.use('/movie', movieRouter)
-router.use('/user', userRouter)
 router.use('/transaction-histories', transactionHistoriesRouter)
 router.use('/report', pdfRouter)
 router.use('/dash-board', dashBoardRouter)

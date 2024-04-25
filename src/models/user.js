@@ -101,12 +101,6 @@ const Users = sequelize.define(
 
       allowNull: true,
     },
-
-    updated_at: {
-      type: DataTypes.TEXT,
-
-      allowNull: true,
-    },
   },
 
   {

@@ -16,6 +16,9 @@ const Comment = sequelize.define(
       type: DataTypes.UUID,
       allowNull: false,
     },
+    img: {
+      type: DataTypes.TEXT,
+    },
     rated: {
       type: DataTypes.INTEGER,
     },

@@ -146,8 +146,6 @@ class ProductService {
         lstPrdSql += ` ${type}`
       }
 
-      console.log('lstPrdSql', lstPrdSql)
-
       const getLstPrd = await sequelize.query(lstPrdSql, {
         type: QueryTypes.SELECT,
       })

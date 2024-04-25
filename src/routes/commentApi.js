@@ -1,36 +1,37 @@
 import pickHandler from '@/helpers/routeHandler'
 import { authorization } from '@/middlewares/auth'
 import { Router } from 'express'
+
 const router = Router()
 
 router.get(
-  '/get-all-order',
+  '/get-all-comment',
   authorization(),
-  pickHandler('OrderController@getAllOrder')
+  pickHandler('CommentController@getAll')
 )
 
 router.get(
-  '/get-by-user-id',
+  '/get-comment-by-id',
   authorization(),
-  pickHandler('OrderController@getOrdersByUserId')
+  pickHandler('CommentController@getCommentById')
 )
 
 router.post(
-  '/create-order',
+  '/create-comment',
   authorization(),
-  pickHandler('OrderController@createOrder')
+  pickHandler('CommentController@createComment')
 )
 
 router.post(
-  '/update-order',
+  '/update-comment',
   authorization(),
-  pickHandler('OrderController@updateOrder')
+  pickHandler('CommentController@updateComment')
 )
 
 router.post(
-  '/delete-order',
+  '/delete-comment',
   authorization(),
-  pickHandler('OrderController@deleteOrder')
+  pickHandler('CommentController@deleteComment')
 )
 
 export default router

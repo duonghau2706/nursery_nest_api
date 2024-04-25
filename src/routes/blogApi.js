@@ -18,6 +18,8 @@ router.get(
 
 router.get('/get-by-id', authorization(), pickHandler('BlogController@getById'))
 
+router.get('/get-info', authorization(), pickHandler('BlogController@getInfo'))
+
 router.post(
   '/update-blog',
   authorization(),
@@ -28,6 +30,12 @@ router.post(
   '/delete-blog',
   authorization(),
   pickHandler('BlogController@deleteBlog')
+)
+
+router.post(
+  '/upload',
+  authorization(),
+  pickHandler('BlogController@uploadBlog')
 )
 
 export default router

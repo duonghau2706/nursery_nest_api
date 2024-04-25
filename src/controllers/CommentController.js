@@ -1,4 +1,4 @@
-import BlogService from '@/services/BlogService'
+import CommentService from '@/services/CommentService'
 import { Message } from '@/utils/Message'
 import ResponseUtils from '@/utils/ResponseUtils'
 import * as dotenv from 'dotenv'
@@ -7,24 +7,14 @@ import log4js from 'log4js'
 dotenv.config()
 const logger = log4js.getLogger()
 
-export default class BlogController {
+export default class CommentController {
   constructor() {
     this.response = ResponseUtils
   }
 
-  async createBlog(req, res, next) {
-    try {
-      const data = await BlogService.createBlog(req)
-      res.status(200).json(this.response(200, Message.SUCCESS, null, data))
-    } catch (error) {
-      console.log(error)
-      res.status(400).json(this.response(400, error.message, null))
-    }
-  }
-
   async getAll(req, res, next) {
     try {
-      const data = await BlogService.getAll(req)
+      const data = await CommentService.getAll(req)
       res.status(200).json(this.response(200, Message.SUCCESS, null, data))
     } catch (error) {
       console.log(error)
@@ -32,9 +22,9 @@ export default class BlogController {
     }
   }
 
-  async getById(req, res, next) {
+  async getCommentById(req, res, next) {
     try {
-      const data = await BlogService.getById(req)
+      const data = await CommentService.getCommentById(req)
       res.status(200).json(this.response(200, Message.SUCCESS, null, data))
     } catch (error) {
       console.log(error)
@@ -42,9 +32,9 @@ export default class BlogController {
     }
   }
 
-  async getInfo(req, res, next) {
+  async createComment(req, res, next) {
     try {
-      const data = await BlogService.getInfo(req)
+      const data = await CommentService.createComment(req)
       res.status(200).json(this.response(200, Message.SUCCESS, null, data))
     } catch (error) {
       console.log(error)
@@ -52,9 +42,9 @@ export default class BlogController {
     }
   }
 
-  async updateBlog(req, res, next) {
+  async updateComment(req, res, next) {
     try {
-      const data = await BlogService.updateBlog(req)
+      const data = await CommentService.updateComment(req)
       res.status(200).json(this.response(200, Message.SUCCESS, null, data))
     } catch (error) {
       console.log(error)
@@ -62,19 +52,9 @@ export default class BlogController {
     }
   }
 
-  async deleteBlog(req, res, next) {
+  async deleteComment(req, res, next) {
     try {
-      const data = await BlogService.deleteBlog(req)
-      res.status(200).json(this.response(200, Message.SUCCESS, null, data))
-    } catch (error) {
-      console.log(error)
-      res.status(400).json(this.response(400, error.message, null))
-    }
-  }
-
-  async uploadBlog(req, res, next) {
-    try {
-      const data = await BlogService.uploadBlog(req)
+      const data = await CommentService.deleteComment(req)
       res.status(200).json(this.response(200, Message.SUCCESS, null, data))
     } catch (error) {
       console.log(error)
