@@ -54,7 +54,7 @@ export default class ProductController {
 
   async deleteProduct(req, res, next) {
     try {
-      const lstPrd = await ProductService.deleteProduct()
+      const lstPrd = await ProductService.deleteProduct(req)
       res.status(200).json(this.response(200, Message.SUCCESS, null, lstPrd))
     } catch (error) {
       console.log(error)
