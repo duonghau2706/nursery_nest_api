@@ -77,13 +77,14 @@
       }
 
       .footer__left {
-        margin-top: 28px;
         display: flex;
         flex-direction: column;
         gap: 5px;
       }
 
       .footer__right {
+        margin-right: 70px;
+        margin-top: 28px;
         display: flex;
         flex-direction: column;
         gap: 5px;
@@ -208,17 +209,17 @@
 
       <footer>
         <div class="footer__left">
-          <div class="footer-title">Người duyệt báo cáo</div>
-          <div class="footer-sig">(Ký và ghi rõ họ tên)</div>
-        </div>
-
-        <div class="footer__right">
           <div class="footer-day">
             Hà Nội, ngày <%=curDay%> tháng <%=curMonth%> năm <%=curYear%>
           </div>
           <div class="footer-title">Người lập báo cáo</div>
           <div class="footer-sig">(Ký và ghi rõ họ tên)</div>
           <div class="footer-name"><%=name%></div>
+        </div>
+
+        <div class="footer__right">
+          <div class="footer-title">Người duyệt báo cáo</div>
+          <div class="footer-sig">(Ký và ghi rõ họ tên)</div>
         </div>
       </footer>
     </div>

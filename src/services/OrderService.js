@@ -205,7 +205,10 @@ class OrderService {
     const orderId = req?.query?.orderId
 
     try {
-      const res = await this.orderModel.findOne({ where: { id: orderId } })
+      const res = await this.orderModel.findOne({
+        where: { id: orderId },
+        order: [['created_at', 'DESC']],
+      })
 
       return this.result(200, true, Message.SUCCESS, res)
     } catch (error) {
