@@ -46,7 +46,11 @@ const Order = sequelize.define(
     ward: {
       type: DataTypes.TEXT,
     },
-    adress: {
+    address: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    full_address: {
       type: DataTypes.TEXT,
       allowNull: true,
     },
@@ -62,6 +66,9 @@ const Order = sequelize.define(
     total_money: {
       type: DataTypes.DECIMAL(15, 3),
       allowNull: false,
+    },
+    payment_method: {
+      type: DataTypes.TEXT,
     },
     note: {
       type: DataTypes.TEXT,

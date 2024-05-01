@@ -10,6 +10,12 @@ router.get(
 )
 
 router.get(
+  '/get-product-by-category',
+  authorization(),
+  pickHandler('ProductController@getProductByCategory')
+)
+
+router.get(
   '/get-all-prd',
   authorization(),
   pickHandler('ProductController@getAll')

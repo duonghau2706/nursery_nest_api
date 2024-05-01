@@ -19,7 +19,7 @@ router.get(
 
 router.post(
   '/create-user',
-  authorization(),
+  // authorization(),
   pickHandler('UserController@createUser')
 )
 

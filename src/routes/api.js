@@ -30,6 +30,8 @@ const router = express.Router()
 
 // router.use('', helperRouter)
 // router.use('/ms-teams', msTeamsRouter)
+router.use('/report', pdfRouter)
+router.use('/dash-board', dashBoardRouter)
 router.use('/comment', commentRouter)
 router.use('/user', userRouter)
 router.use('/category', categoryRouter)
@@ -44,11 +46,9 @@ router.use('/login', loginRouter)
 router.use('/register', registerRouter)
 router.use('/movie', movieRouter)
 router.use('/transaction-histories', transactionHistoriesRouter)
-router.use('/report', pdfRouter)
-router.use('/dash-board', dashBoardRouter)
 
 router.post('/render-ejs-revenue', (req, res) => {
-  const listPaymentUser = req?.body?.listPaymentUser
+  const listRevenue = req?.body?.listRevenue
   const startRevenue = req?.body?.startRevenue
   const endRevenue = req?.body?.endRevenue
   const curDay = req?.body?.curDay
@@ -60,9 +60,40 @@ router.post('/render-ejs-revenue', (req, res) => {
   ejs.renderFile(
     filePath,
     {
-      data: listPaymentUser || [],
+      data: listRevenue || [],
       start: startRevenue || 'trước',
       end: endRevenue || 'hiện tại',
+      curDay,
+      curMonth,
+      curYear,
+      name,
+    },
+    (err, data) => {
+      if (err) {
+        return res.send('Loi roi huhu')
+      }
+      // return res.render(filePath, { data: 'hihi' })
+      return res.send(data)
+    }
+  )
+})
+
+router.post('/render-ejs-revenue-category', (req, res) => {
+  const listRevenueCate = req?.body?.listRevenueCate
+  const startCate = req?.body?.startCate
+  const endCate = req?.body?.endCate
+  const curDay = req?.body?.curDay
+  const curMonth = req?.body?.curMonth
+  const curYear = req?.body?.curYear
+  const name = req?.body?.name
+
+  const filePath = path.join(__dirname, '..', 'view', 'revenueCategory.ejs')
+  ejs.renderFile(
+    filePath,
+    {
+      data: listRevenueCate || [],
+      start: startCate || 'trước',
+      end: endCate || 'hiện tại',
       curDay,
       curMonth,
       curYear,

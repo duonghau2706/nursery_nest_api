@@ -90,7 +90,6 @@ class CategoryService {
 
   async createCategory(req) {
     try {
-      console.log('req', req?.body)
       const res = await this.categoryModel.create(req?.body)
 
       return this.result(200, true, Message.SUCCESS, res)

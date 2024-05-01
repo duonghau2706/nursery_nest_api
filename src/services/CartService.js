@@ -30,7 +30,7 @@ class CartService {
       })
 
       const data = {
-        carts: camelcaseKeys(carts),
+        carts: carts,
         totalMoney: camelcaseKeys(totalMoney),
       }
 
@@ -54,8 +54,6 @@ class CartService {
     const createAt = req?.body?.createAt
     const updatedAt = req?.body?.updatedAt
 
-    console.log('req', req?.body)
-
     try {
       let cartSql
       if (type === 'insert') {
@@ -66,13 +64,30 @@ class CartService {
         cartSql = `delete from carts where user_id = '${userId}' and product_id='${productId}'`
       }
 
-      console.log('cartSql', cartSql)
-
       const updateCart = await sequelize.query(cartSql, {
         type: QueryTypes.SELECT,
       })
 
       return this.result(200, true, Message.SUCCESS, updateCart)
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error?.message,
+      }
+    }
+  }
+
+  async resetCart(req) {
+    const userId = req?.body?.userId
+
+    try {
+      const cartSql = `delete from carts where user_id = '${userId}'`
+
+      const resetCart = await sequelize.query(cartSql, {
+        type: QueryTypes.SELECT,
+      })
+
+      return this.result(200, true, Message.SUCCESS, resetCart)
     } catch (error) {
       throw {
         statusCode: 400,

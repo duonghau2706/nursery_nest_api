@@ -42,7 +42,7 @@ class OrderDetailService {
         '${createdAt}',
         '${updatedAt}'
     )`
-
+      console.log('sql', sql)
       const orderDetail = await sequelize.query(sql, {
         type: QueryTypes.SELECT,
       })
@@ -77,7 +77,6 @@ class OrderDetailService {
         left join products as p on od.product_id = p.id
     where
         order_id = '${orderId}'`
-      console.log('sql', sql)
       const orderDetail = await sequelize.query(sql, {
         type: QueryTypes.SELECT,
       })

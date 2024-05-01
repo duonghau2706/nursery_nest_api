@@ -5,7 +5,7 @@ const router = Router()
 
 router.get(
   '/get-all-cart',
-  authorization(),
+  // authorization(),
   pickHandler('CartController@getAllCart')
 )
 
@@ -13,6 +13,12 @@ router.post(
   '/update-cart',
   authorization(),
   pickHandler('CartController@updateCart')
+)
+
+router.post(
+  '/reset-cart',
+  authorization(),
+  pickHandler('CartController@resetCart')
 )
 
 export default router

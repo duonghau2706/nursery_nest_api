@@ -1,19 +1,11 @@
+import { Message } from '@/utils/Message'
 import ResponseUtils from '@/utils/ResponseUtils'
 import log4js from 'log4js'
-import { Message } from '@/utils/Message'
 
-import * as dotenv from 'dotenv'
-import { UserModel, EffortMemberModel, CustomerModel } from '@/models'
-import { Op, QueryTypes } from 'sequelize'
-import camelcaseKeys from 'camelcase-keys'
-import {
-  TokenRepository,
-  UserRepository,
-  EffortMemberRepository,
-} from '@/repositories'
-import { cleanObj } from '@/helpers/obj'
-import moment from 'moment'
 import { sequelize } from '@/helpers/connection'
+import dayjs from 'dayjs'
+import * as dotenv from 'dotenv'
+import { QueryTypes } from 'sequelize'
 
 dotenv.config()
 
@@ -24,255 +16,276 @@ class DashBroadService {
   }
 
   async getAllDb(req) {
-    const startDb = req?.body?.startDb
-    const endDb = req?.body?.endDb
+    const startRevenue = req?.query?.startRevenue
+    const endRevenue = req?.query?.endRevenue
+    const startCate = req?.query?.startCate
+    const endCate = req?.query?.endCate
+    const startCatePrev = dayjs(req?.query?.startCate).subtract(1, 'month')
+    const endCatePrev = dayjs(req?.query?.endCate).subtract(1, 'month')
 
     try {
-      //---------CARD--------------
-      let sqlCardAvg = 'select list_rated from movie where 1=1'
-      let sqlCardAllShows = 'select count(*) as all_shows from movie where 1=1'
-      let sqlCardSingle =
-        "SELECT count (*) as single from movie where 1=1 and type = 'single'"
-      let sqlCardMovies =
-        "SELECT count (*) as series from movie where 1=1 and type = 'series'"
+      const cardSql = `select
+        sum(total_money) as total_income,
+        count(*) as total_sale,
+        sum(
+            case
+                when status_money = 1 then 1
+                else 0
+            end
+        ) as payment,
+        sum(
+            case
+                when status_money = 0 then 1
+                else 0
+            end
+        ) as unpayment,
+        sum(
+            case
+                when status_ship = 1 then 1
+                else 0
+            end
+        ) as ship,
+        sum(
+            case
+                when status_ship = 0 then 1
+                else 0
+            end
+        ) as unship
+    from
+        orders`
 
-      //---------TIME--------------
-      let sortSql =
-        "SELECT COUNT(*) as sort FROM movie WHERE type='single' and time < 30"
-      let normalSql =
-        "SELECT COUNT(*) as normal FROM movie WHERE type='single' and time >= 30 AND time < 60"
-      let longSql =
-        "SELECT COUNT(*) as long FROM movie WHERE type='single' and time >= 60 AND time <= 120"
-      let veryLongSql =
-        "SELECT COUNT(*) as very_long FROM movie WHERE type='single' and time > 120"
+      const getCard = await sequelize.query(cardSql, {
+        type: QueryTypes.SELECT,
+      })
 
-      //---------VIEW--------------
-      let veryFewSql =
-        'SELECT COUNT(*) as very_few FROM movie WHERE view < 1000'
-      let fewSql =
-        'SELECT COUNT(*) as few FROM movie WHERE view >= 1000 AND view < 10000'
-      let muchSql =
-        'SELECT COUNT(*) as much FROM movie WHERE view >= 10000 AND view <= 100000'
-      let veryMuchSql =
-        'SELECT COUNT(*) as very_much FROM movie WHERE view > 100000'
+      let revenueSql = `SELECT
+          EXTRACT(
+              month
+              from
+                  created_at
+          ) as month,
+          sum(total_money) as revenue
+      from
+          orders
+      where 1 = 1 `
 
-      //---------TRENDING--------------
-      const mondaySql =
-        'select type, sum(view_of_monday) from movie group by type'
-      const tuesdaySql =
-        'select type, sum(view_of_tuesday) from movie group by type'
-      const wednesdaySql =
-        'select type, sum(view_of_wednesday) from movie group by type'
-      const thursdaySql =
-        'select type, sum(view_of_thursday) from movie group by type'
-      const fridaySql =
-        'select type, sum(view_of_friday) from movie group by type'
-      const saturdaySql =
-        'select type, sum(view_of_saturday) from movie group by type'
-      const sundaySql =
-        'select type, sum(view_of_sunday) from movie group by type'
-
-      const monthOneSql =
-        'select type, sum(view_of_month_one) from movie group by type'
-      const monthTwoSql =
-        'select type, sum(view_of_month_two) from movie group by type'
-      const monthThreeSql =
-        'select type, sum(view_of_month_three) from movie group by type'
-      const monthFourSql =
-        'select type, sum(view_of_month_four) from movie group by type'
-      const monthFiveSql =
-        'select type, sum(view_of_month_five) from movie group by type'
-      const monthSixSql =
-        'select type, sum(view_of_month_six) from movie group by type'
-      const monthSevenSql =
-        'select type, sum(view_of_month_seven) from movie group by type'
-      const monthEightSql =
-        'select type, sum(view_of_month_eight) from movie group by type'
-      const monthNineSql =
-        'select type, sum(view_of_month_nine) from movie group by type'
-      const monthTenSql =
-        'select type, sum(view_of_month_ten) from movie group by type'
-      const monthElevenSql =
-        'select type, sum(view_of_month_eleven) from movie group by type'
-      const monthTwelveSql =
-        'select type, sum(view_of_month_twelve) from movie group by type'
-
-      //---------YEAR--------------
-      let yearSingleSql =
-        "select year_publish, count (*) as year_publish_single from movie where 1=1 and type='single' and year_publish BETWEEN '2016' and '2023' group by year_publish"
-      let yearSeriesSql =
-        "select year_publish, count (*) as year_publish_series from movie where 1=1 and type='series' and year_publish BETWEEN '2016' and '2023' group by year_publish"
-
-      if (startDb && endDb) {
-        sqlCardAllShows += ` and created_at between '${startDb}' and '${endDb}'`
-        sqlCardAvg += ` and created_at between '${startDb}' and '${endDb}'`
-        sqlCardMovies += ` and created_at between '${startDb}' and '${endDb}'`
-        sqlCardSingle += ` and created_at between '${startDb}' and '${endDb}'`
-        sortSql += ` and created_at between '${startDb}' and '${endDb}'`
-        normalSql += ` and created_at between '${startDb}' and '${endDb}'`
-        longSql += ` and created_at between '${startDb}' and '${endDb}'`
-        veryLongSql += ` and created_at between '${startDb}' and '${endDb}'`
-        veryFewSql += ` and created_at between '${startDb}' and '${endDb}'`
-        fewSql += ` and created_at between '${startDb}' and '${endDb}'`
-        muchSql += ` and created_at between '${startDb}' and '${endDb}'`
-        veryMuchSql += ` and created_at between '${startDb}' and '${endDb}'`
+      if (startRevenue) {
+        revenueSql += ` and
+          created_at
+           >= '${startRevenue}'`
       }
 
-      const cardAvg = await sequelize.query(sqlCardAvg, {
-        type: QueryTypes.SELECT,
-      })
-      const cardAllShows = await sequelize.query(sqlCardAllShows, {
-        type: QueryTypes.SELECT,
-      })
-      const cardSingle = await sequelize.query(sqlCardSingle, {
-        type: QueryTypes.SELECT,
-      })
-      const cardSeries = await sequelize.query(sqlCardMovies, {
+      if (endRevenue) {
+        revenueSql += ` and
+          created_at
+          <= '${endRevenue}'`
+      }
+
+      revenueSql += ` group by
+          EXTRACT(
+              month
+              from
+                  created_at
+          )
+      order by
+          EXTRACT(
+              month
+              from
+                  created_at
+          )`
+
+      const getRevenue = await sequelize.query(revenueSql, {
         type: QueryTypes.SELECT,
       })
 
-      const sort = await sequelize.query(sortSql, {
-        type: QueryTypes.SELECT,
-      })
-      const normal = await sequelize.query(normalSql, {
-        type: QueryTypes.SELECT,
-      })
-      const long = await sequelize.query(longSql, {
-        type: QueryTypes.SELECT,
-      })
-      const veryLong = await sequelize.query(veryLongSql, {
+      let revenueByCateSql = `select
+    c.name,
+    sum(od.quantity * original_price) as revenue_by_category
+from
+    order_details as od
+    left join products as p on od.product_id = p.id
+    left join categories as c on p.category_id = c.id
+where 1 = 1 `
+
+      if (startRevenue) {
+        revenueByCateSql += ` and
+           od.created_at
+          >= '${startRevenue}'`
+      }
+      if (endRevenue) {
+        revenueByCateSql += ` and
+          od.created_at
+          >= '${endRevenue}'`
+      }
+      revenueByCateSql += `group by
+    c.id`
+
+      const getRevenueByCategory = await sequelize.query(revenueByCateSql, {
         type: QueryTypes.SELECT,
       })
 
-      const veryFew = await sequelize.query(veryFewSql, {
-        type: QueryTypes.SELECT,
-      })
-      const few = await sequelize.query(fewSql, {
-        type: QueryTypes.SELECT,
-      })
-      const much = await sequelize.query(muchSql, {
-        type: QueryTypes.SELECT,
-      })
-      const veryMuch = await sequelize.query(veryMuchSql, {
-        type: QueryTypes.SELECT,
-      })
+      let dataTableRevenueSql = `select
+          EXTRACT(
+              month
+              from
+                  od.created_at
+          ) as mo,
+          EXTRACT(
+              year
+              from
+                  od.created_at
+          ) as ye,
+          count(*) as quantity_order,
+          sum(od.quantity * original_price) as original_revenue,
+          sum(
+              od.quantity * original_price * COALESCE(d.sale, 0)
+          ) as total_discount,
+          sum(COALESCE(o.ship, 0)) as total_ship,
+          sum(
+              od.quantity * original_price * (1 - COALESCE(d.sale, 0)) + COALESCE(o.ship, 0)
+          ) as total_revenue
+      from
+          order_details as od
+          left join products as p on od.product_id = p.id
+          left join orders as o on od.order_id = o.id
+          left join discounts as d on o.discount_id = d.id
+      where
+          1 = 1 `
+      if (startRevenue) {
+        dataTableRevenueSql += ` and 
+          od.created_at
+           >= '${startRevenue}'`
+      }
 
-      const yearSingle = await sequelize.query(yearSingleSql, {
-        type: QueryTypes.SELECT,
-      })
-      const yearSeries = await sequelize.query(yearSeriesSql, {
-        type: QueryTypes.SELECT,
-      })
+      if (endRevenue) {
+        dataTableRevenueSql += ` and 
+         od.created_at
+           <= '${endRevenue}'`
+      }
 
-      const monday = await sequelize.query(mondaySql, {
-        type: QueryTypes.SELECT,
-      })
-      const tuesday = await sequelize.query(tuesdaySql, {
-        type: QueryTypes.SELECT,
-      })
-      const wednesday = await sequelize.query(wednesdaySql, {
-        type: QueryTypes.SELECT,
-      })
-      const thursday = await sequelize.query(thursdaySql, {
-        type: QueryTypes.SELECT,
-      })
-      const friday = await sequelize.query(fridaySql, {
-        type: QueryTypes.SELECT,
-      })
-      const saturday = await sequelize.query(saturdaySql, {
-        type: QueryTypes.SELECT,
-      })
-      const sunday = await sequelize.query(sundaySql, {
-        type: QueryTypes.SELECT,
-      })
+      dataTableRevenueSql += ` group by
+          EXTRACT(
+              month
+              from
+                  od.created_at
+          ),
+          EXTRACT(
+              year
+              from
+                  od.created_at
+          )`
 
-      const monthOne = await sequelize.query(monthOneSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthTwo = await sequelize.query(monthTwoSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthThree = await sequelize.query(monthThreeSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthFour = await sequelize.query(monthFourSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthFive = await sequelize.query(monthFiveSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthSix = await sequelize.query(monthSixSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthSeven = await sequelize.query(monthSevenSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthEight = await sequelize.query(monthEightSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthNine = await sequelize.query(monthNineSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthTen = await sequelize.query(monthTenSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthEleven = await sequelize.query(monthElevenSql, {
-        type: QueryTypes.SELECT,
-      })
-      const monthTwelve = await sequelize.query(monthTwelveSql, {
-        type: QueryTypes.SELECT,
-      })
+      dataTableRevenueSql += ` order by ye, mo`
+
+      const getDataTableRevenueSql = await sequelize.query(
+        dataTableRevenueSql,
+        {
+          type: QueryTypes.SELECT,
+        }
+      )
+
+      // let dataTableRevenueCategorySql = `select
+      //     c.name,
+      //     count(*) as quantity_order,
+      //     sum(p.original_price * od.quantity) as total_revenue
+      // from
+      //     order_details as od
+      //     left join products as p on od.product_id = p.id
+      //     left join categories as c on p.category_id = c.id
+      // where
+      //     1 = 1`
+
+      // if (startCate) {
+      //   dataTableRevenueCategorySql += ` and od.created_at >= '${startCate}'`
+      // }
+
+      // if (endCate) {
+      //   dataTableRevenueCategorySql += ` and od.created_at <= '${endCate}'`
+      // }
+
+      // dataTableRevenueCategorySql += ` group by
+      //     c.name`
+
+      let dataTableRevenueCategorySql = `with current_revenue as (
+    select
+        c.name,
+        count(*) as quantity_order,
+        sum(p.original_price * od.quantity) as total_revenue
+    from
+        order_details as od
+        left join products as p on od.product_id = p.id
+        left join categories as c on p.category_id = c.id
+    where
+        1 = 1 `
+
+      if (startCate) {
+        dataTableRevenueCategorySql += ` and od.created_at >= '${startCate}'`
+      }
+
+      if (endCate) {
+        dataTableRevenueCategorySql += ` and od.created_at <= '${endCate}'`
+      }
+
+      dataTableRevenueCategorySql += ` group by
+        c.name
+),
+previous_revenue as (
+    select
+        c.name,
+        count(*) as quantity_order,
+        sum(p.original_price * od.quantity) as total_revenue
+    from
+        order_details as od
+        left join products as p on od.product_id = p.id
+        left join categories as c on p.category_id = c.id
+    where
+        1 = 1 `
+
+      if (startCatePrev) {
+        dataTableRevenueCategorySql += ` and od.created_at >= '${startCatePrev}'`
+      }
+
+      if (endCatePrev) {
+        dataTableRevenueCategorySql += ` and od.created_at <= '${endCatePrev}'`
+      }
+
+      dataTableRevenueCategorySql += ` group by
+        c.name
+),
+revenue_change AS (
+    SELECT
+        cr.name,
+        cr.quantity_order,
+        cr.total_revenue,
+        CASE
+            WHEN pr.total_revenue = 0 THEN NULL
+            ELSE (cr.total_revenue - pr.total_revenue) / pr.total_revenue * 100
+        END AS revenue_change_percentage
+    FROM
+        current_revenue cr
+        LEFT JOIN previous_revenue pr ON cr.name = pr.name
+)
+select
+    name,
+    quantity_order,
+    total_revenue,
+    ROUND(revenue_change_percentage, 2) AS revenue_change_percentage
+from
+    revenue_change`
+
+      const getDataTableRevenueCategorySql = await sequelize.query(
+        dataTableRevenueCategorySql,
+        {
+          type: QueryTypes.SELECT,
+        }
+      )
 
       const dataRes = {
-        card: {
-          cardAvg,
-          cardAllShows,
-          cardSingle,
-          cardSeries,
-        },
-        chart: {
-          time: {
-            sort,
-            normal,
-            long,
-            veryLong,
-          },
-          view: {
-            veryFew,
-            few,
-            much,
-            veryMuch,
-          },
-          trending: {
-            week: {
-              monday,
-              tuesday,
-              wednesday,
-              thursday,
-              friday,
-              saturday,
-              sunday,
-            },
-            month: {
-              monthOne,
-              monthTwo,
-              monthThree,
-              monthFour,
-              monthFive,
-              monthSix,
-              monthSeven,
-              monthEight,
-              monthNine,
-              monthTen,
-              monthEleven,
-              monthTwelve,
-            },
-          },
-          yearPublish: {
-            yearSingle,
-            yearSeries,
-          },
-        },
+        dataCard: getCard,
+        dataRevenue: getRevenue,
+        dataRevenueByCategory: getRevenueByCategory,
+        dataTableRevenue: getDataTableRevenueSql,
+        dataTableRevenueCategory: getDataTableRevenueCategorySql,
       }
 
       return this.result(200, true, Message.SUCCESS, dataRes)

@@ -55,13 +55,13 @@ class UserService {
   // }
 
   async getPdf(req, res) {
-    console.log('req?.body', req?.body)
+    // console.log('req?.body', req?.body)
     const contentHtml = req?.body?.contentHtml
-    console.log('contentHtml', contentHtml)
+    // console.log('contentHtml', contentHtml)
     // const listPaymentUser = req?.body?.listPaymentUser
     try {
       const data = await this.html()
-      console.log('data', data)
+      // console.log('data', data)
       //   this.html().then(async (data) => {
       // const data = await this.renderEjs(req, res, listPaymentUser)
 

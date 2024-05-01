@@ -31,4 +31,14 @@ export default class CartController {
       res.status(400).json(this.response(400, error.message, null))
     }
   }
+
+  async resetCart(req, res, next) {
+    try {
+      const cart = await CartService.resetCart(req)
+      res.status(200).json(this.response(200, Message.SUCCESS, null, cart))
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(this.response(400, error.message, null))
+    }
+  }
 }

@@ -18,14 +18,9 @@ class ProductService {
     this.productModel = ProductModel
   }
 
-  async getAll(req) {
-    const limitInput = req?.query?.perPage
-    const pageInput = req?.query?.currentPage
-    const name = req?.query?.name
-    const category = req?.query?.category
-
+  async getProductByCategory(req) {
     try {
-      let sql = 'select * from products where 1=1'
+      let sql = 'select * from products group by'
 
       if (name?.trim()?.length > 0) {
         sql += ` and name='${name}'`
@@ -33,6 +28,68 @@ class ProductService {
 
       if (category?.trim()?.length > 0) {
         sql += ` and category=${category}`
+      }
+
+      let getData = await sequelize.query(sql, {
+        type: QueryTypes.SELECT,
+      })
+
+      let totalPageRes = 1
+      let pageRes = pageInput
+      let total = getData?.length
+
+      if (limitInput || pageInput) {
+        const { totalPage, page, offset } = elementPaginate({
+          totalRecord: getData?.length,
+          page: pageInput,
+          limit: limitInput,
+        })
+
+        totalPageRes = totalPage
+        pageRes = page
+
+        getData = await sequelize.query(
+          sql + ` LIMIT ${limitInput} OFFSET ${offset}`,
+          { type: QueryTypes.SELECT }
+        )
+      }
+
+      const dataRes = {
+        listProduct: getData,
+        pagination: {
+          totalPageRes: +totalPageRes,
+          pageRes: +pageRes,
+          total: +total,
+        },
+      }
+
+      return this.result(200, true, Message.SUCCESS, dataRes)
+    } catch (error) {
+      throw {
+        statusCode: 400,
+        message: error?.message,
+      }
+    }
+  }
+
+  async getAll(req) {
+    const limitInput = req?.query?.perPage
+    const pageInput = req?.query?.currentPage
+    const name = req?.query?.name
+    const category_id = req?.query?.category_id
+
+    // const category = req?.query?.category
+
+    try {
+      let sql =
+        'select p.*, c.name as category_name from products as p left join categories as c on p.category_id = c.id '
+
+      if (name?.trim()?.length > 0) {
+        sql += ` and p.name='${name}'`
+      }
+
+      if (category_id?.trim()?.length > 0) {
+        sql += ` and p.category_id=${category_id}`
       }
 
       let getData = await sequelize.query(sql, {
@@ -157,7 +214,6 @@ class ProductService {
 
   async getProductById(req) {
     const id = req?.query?.id
-
     try {
       const res = await this.productModel.findOne({
         where: { id },
@@ -186,7 +242,6 @@ class ProductService {
   }
 
   async updateProduct(req) {
-    console.log('body', req?.body)
     const id = req?.body?.id
     const name = req?.body?.name
     const category = req?.body?.category?.value
@@ -241,16 +296,14 @@ class ProductService {
   }
 
   async getSortedProductByCondition(req) {
-    const typeOfCategory = req?.query?.typeOfCategory
+    const categoryId = req?.query?.categoryId
     const minRange = req?.query?.minRange
     const maxRange = req?.query?.maxRange
     const cmpType = req?.query?.cmpType
     const type = req?.query?.type
 
-    console.log('iih', typeOfCategory, type)
-
     try {
-      let lstPrdSql = `select * from products where category = ${typeOfCategory}`
+      let lstPrdSql = `select * from products where category_id = '${categoryId}'`
 
       if (minRange) {
         lstPrdSql += ` and original_price >= ${minRange}`
@@ -260,10 +313,12 @@ class ProductService {
         lstPrdSql += ` and original_price < ${maxRange}`
       }
 
+      //order by
       if (cmpType) {
         lstPrdSql += ` order by ${cmpType}`
       }
 
+      //DESC, ASC
       if (type) {
         lstPrdSql += ` ${type}`
       }
@@ -272,7 +327,7 @@ class ProductService {
         type: QueryTypes.SELECT,
       })
 
-      return this.result(200, true, Message.SUCCESS, camelcaseKeys(getLstPrd))
+      return this.result(200, true, Message.SUCCESS, getLstPrd)
     } catch (error) {
       throw {
         statusCode: 400,

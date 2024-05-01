@@ -117,14 +117,22 @@ class OrderService {
     const district =
       req?.body?.district === undefined ? null : `'${req?.body?.district}'`
     const ward = req?.body?.ward === undefined ? null : `'${req?.body?.ward}'`
-    const adress =
-      req?.body?.adress === undefined ? null : `'${req?.body?.adress}'`
+    const address =
+      req?.body?.address === undefined ? null : `'${req?.body?.address}'`
+    const full_address =
+      req?.body?.full_address === undefined
+        ? null
+        : `'${req?.body?.full_address}'`
     const originalTotalMoney = req?.body?.originalTotalMoney
     const sale = req?.body?.sale
     const ship = req?.body?.ship
     const note = req?.body?.note === undefined ? null : `'${req?.body?.note}'`
     const createdAt = req?.body?.createdAt
     const updatedAt = req?.body?.updatedAt
+    const payment_method =
+      req?.body?.payment_method === undefined
+        ? null
+        : `'${req?.body?.payment_method}'`
 
     try {
       const sql = `insert into
@@ -141,8 +149,10 @@ class OrderService {
         province,
         district,
         ward,
-        adress,
+        address,
+        full_address,
         original_total_money,
+        payment_method,
         sale,
         ship,
         note,
@@ -157,13 +167,15 @@ class OrderService {
         '${orderCode}',
         ${totalMoney},
         ${statusMoney},
-        ${statusMoney},
+        ${statusShip},
         ${discountId},
         ${province},
         ${district},
         ${ward},
-        ${adress},
+        ${address},
+        ${full_address},
         ${originalTotalMoney},
+        ${payment_method},
         ${sale},
         ${ship},
         ${note},

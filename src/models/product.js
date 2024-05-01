@@ -18,6 +18,9 @@ const Product = sequelize.define(
     category: {
       type: DataTypes.INTEGER,
     },
+    category_id: {
+      type: DataTypes.UUID,
+    },
     original_price: {
       type: DataTypes.DECIMAL(15),
     },

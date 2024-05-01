@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function () {
   fetch('http://localhost:3000/api/v1/report/pdf')
     .then((response) => response.json())
     .then((data) => {
-      console.log('data', data)
+      // console.log('data', data)
       // Lấy thẻ tbody của bảng
       const tableBody = document
         .getElementById('apiDataTable')

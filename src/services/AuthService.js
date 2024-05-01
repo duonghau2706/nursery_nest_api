@@ -154,7 +154,7 @@ class AuthService {
 
         // save data to database
         await TokenRepository.create(payloadNew)
-        return token
+        return { token }
       }
       // update a record
       const tokenUser = qToken.dataValues
@@ -164,9 +164,10 @@ class AuthService {
         option: { id: tokenUser.id },
       }
 
+      const data = { token, existedUser }
       // save data to database
       await TokenRepository.update(payloadUpdate)
-      return token
+      return data
     } catch (error) {
       logger.error('[Error login]', error)
       throw error

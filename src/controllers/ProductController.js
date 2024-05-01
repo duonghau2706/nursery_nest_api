@@ -12,6 +12,16 @@ export default class ProductController {
     this.response = ResponseUtils
   }
 
+  async getProductByCategory(req, res, next) {
+    try {
+      const lstPrd = await ProductService.getProductByCategory()
+      res.status(200).json(this.response(200, Message.SUCCESS, null, lstPrd))
+    } catch (error) {
+      console.log(error)
+      res.status(400).json(this.response(400, error.message, null))
+    }
+  }
+
   async getAllProduct(req, res, next) {
     try {
       const lstPrd = await ProductService.getAllProduct()

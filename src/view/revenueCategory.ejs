@@ -156,20 +156,18 @@
       </header>
 
       <main>
-        <div class="title">BÁO CÁO DOANH THU THEO THỜI GIAN</div>
+        <div class="title">BÁO CÁO DOANH THU THEO LOẠI SẢN PHẨM</div>
         <div class="date">Từ ngày <%=start%> đến ngày <%=end%></div>
         <div class="table">
           <% let totalRevenue = 0; for (const key in data) { totalRevenue +=
           parseFloat(data[key].total_revenue) || 0; } %>
-          <table>
+          <table style="justify-content: center">
             <thead>
               <tr>
                 <th>STT</th>
-                <th>Thời gian</th>
+                <th>Loại sản phẩm</th>
                 <th>SL đơn hàng</th>
-                <th>Tiền hàng</th>
-                <th>Chiết khấu</th>
-                <th>Phí giao hàng</th>
+                <th>Thay đổi so với tháng trước</th>
                 <th>Doanh số</th>
               </tr>
             </thead>
@@ -177,15 +175,16 @@
               <% let index = 1; %> <% for (const key in data) { %>
               <tr>
                 <td><%= index %></td>
-                <td>Tháng <%= data[key].mo %> năm <%= data[key].ye %></td>
+                <td><%= data[key].name %></td>
                 <td><%= data[key].quantity_order %></td>
-                <td>
-                  <%= Number(data[key].original_revenue).toLocaleString()%>
+
+                <td style="text-align: center">
+                  <% if (Number(data[key].revenue_change_percentage) > 0) { %>
+                  tăng <%= data[key].revenue_change_percentage %>% <% } else if
+                  (Number(data[key].revenue_change_percentage) < 0) { %> giảm
+                  <%= -data[key].revenue_change_percentage %>% <% } else { %>
+                  sản phẩm mới <% } %>
                 </td>
-                <td>
-                  <%= Number(data[key].total_discount).toLocaleString() %>
-                </td>
-                <td><%= Number(data[key].total_ship).toLocaleString() %></td>
                 <td>
                   <%= Number(data[key].total_revenue).toLocaleString() || 0 %>
                 </td>
@@ -194,10 +193,10 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="6" style="text-align: right; font-weight: bold">
+                <td colspan="4" style="text-align: right; font-weight: bold">
                   Tổng cộng:
                 </td>
-                <td style="text-align: center">
+                <td style="text-align: right">
                   <%= Number(totalRevenue).toLocaleString() %>
                 </td>
               </tr>

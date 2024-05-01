@@ -13,6 +13,10 @@ const Category = sequelize.define(
       type: DataTypes.TEXT,
     },
 
+    url_name: {
+      type: DataTypes.TEXT,
+    },
+
     created_by: {
       type: DataTypes.TEXT,
       allowNull: true,
